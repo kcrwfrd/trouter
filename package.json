@@ -18,8 +18,7 @@
     "test": "vitest run",
     "build": "vite build",
     "dev": "vitest",
-    "prepublishOnly": "npm run build",
-    "version": "npm run build && git add -A dist"
+    "prepublishOnly": "npm run build"
   },
   "publishConfig": {
     "access": "public"
