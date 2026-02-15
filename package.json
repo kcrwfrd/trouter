@@ -1,5 +1,5 @@
 {
-  "name": "trouter",
+  "name": "@kcrwfrd/trouter",
   "version": "0.0.5",
   "type": "module",
   "description": "Client-side router with a tree of handlers.",
@@ -11,11 +11,18 @@
       "require": "./dist/trouter.umd.js"
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "vitest run",
     "build": "vite build",
     "dev": "vitest",
+    "prepublishOnly": "npm run build",
     "version": "npm run build && git add -A dist"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "author": "Kevin Crawford",
   "license": "MIT",
