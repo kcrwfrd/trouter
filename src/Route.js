@@ -104,7 +104,7 @@ class Route {
       for (let paramName of query.split('&')) {
         let paramValue = params[paramName]
 
-        if (paramValue) {
+        if (paramValue != null) {
           (isFirst) ? url += '?' : url += '&';
 
           url += `${paramName}=${paramValue}`
