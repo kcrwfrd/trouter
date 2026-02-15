@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import UrlRouter from '../UrlRouter'
 
 describe('UrlRouter:', () => {
@@ -5,9 +6,9 @@ describe('UrlRouter:', () => {
 
   beforeEach(() => {
     urlRouter = new UrlRouter()
-    index = jasmine.createSpy()
-    foo = jasmine.createSpy()
-    bar = jasmine.createSpy()
+    index = vi.fn()
+    foo = vi.fn()
+    bar = vi.fn()
 
     urlRouter.when('/', index)
     urlRouter.when('/foo/:fooId', foo)
@@ -25,7 +26,7 @@ describe('UrlRouter:', () => {
       urlRouter.onChange('#!/foo/1')
 
       expect(foo).toHaveBeenCalled()
-      expect(foo.calls.mostRecent().args[0]).toEqual({
+      expect(foo.mock.calls[foo.mock.calls.length - 1][0]).toEqual({
         fooId: '1'
       })
     })
@@ -35,14 +36,14 @@ describe('UrlRouter:', () => {
 
       expect(foo).not.toHaveBeenCalled()
       expect(bar).toHaveBeenCalled()
-      expect(bar.calls.mostRecent().args[0]).toEqual({
+      expect(bar.mock.calls[bar.mock.calls.length - 1][0]).toEqual({
         fooId: '1',
         barId: '2'
       })
     })
 
     it('Should log a warning if no match found.', () => {
-      spyOn(console, 'warn')
+      vi.spyOn(console, 'warn').mockImplementation(() => {})
 
       urlRouter.onChange('#!/foo/1/bar')
 
@@ -52,7 +53,7 @@ describe('UrlRouter:', () => {
     })
 
     it('Should redirect to default route if no match found.', () => {
-      spyOn(urlRouter, 'onChange').and.callThrough()
+      vi.spyOn(urlRouter, 'onChange')
 
       urlRouter.otherwise('/')
 

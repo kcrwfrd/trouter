@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import Route from '../Route'
 import {defer} from '../common'
 
@@ -38,9 +39,9 @@ describe('Route:', () => {
     let controller, deferred, route, resolve;
 
     beforeEach(() => {
-      controller = jasmine.createSpy('controller')
+      controller = vi.fn()
       deferred = defer()
-      resolve = jasmine.createSpy('resolve').and.returnValue(deferred.promise)
+      resolve = vi.fn().mockReturnValue(deferred.promise)
 
       route = new Route({
         name: 'foo',
@@ -67,7 +68,7 @@ describe('Route:', () => {
 
       return deferred.promise.then(() => {
         expect(controller).toHaveBeenCalledWith(
-          jasmine.objectContaining({ fooId: '1' }),
+          expect.objectContaining({ fooId: '1' }),
           'bar'
         )
       })
@@ -75,7 +76,7 @@ describe('Route:', () => {
 
     it('Should call resolve with route params.', () => {
       expect(resolve).toHaveBeenCalledWith(
-        jasmine.objectContaining({ fooId: '1' })
+        expect.objectContaining({ fooId: '1' })
       )
     })
 
@@ -97,7 +98,7 @@ describe('Route:', () => {
       bar.resolve('Bar')
 
       return route.enter().then(() => {
-        let [params, resolve] = controller.calls.mostRecent().args
+        let [params, resolve] = controller.mock.calls[controller.mock.calls.length - 1]
 
         expect(params).toEqual({})
 
@@ -118,7 +119,7 @@ describe('Route:', () => {
       beforeEach(() => {
         deferred = defer()
 
-        spyOn(Controller, 'resolve').and.returnValue(deferred.promise)
+        vi.spyOn(Controller, 'resolve').mockReturnValue(deferred.promise)
 
         route = new Route({
           name: 'foo',
@@ -137,7 +138,7 @@ describe('Route:', () => {
         route.enter({ fooId: '1' })
 
         expect(Controller.resolve).toHaveBeenCalledWith(
-          jasmine.objectContaining({ fooId: '1' })
+          expect.objectContaining({ fooId: '1' })
         )
       })
 

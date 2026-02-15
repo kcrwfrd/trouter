@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import Queue from '../Queue'
 import {defer} from '../common'
 
@@ -8,8 +9,8 @@ describe('Queue:', () => {
     foo = defer()
     bar = defer()
 
-    getFoo = jasmine.createSpy('getFoo').and.returnValue(foo.promise)
-    getBar = jasmine.createSpy('getBar').and.returnValue(bar.promise)
+    getFoo = vi.fn().mockReturnValue(foo.promise)
+    getBar = vi.fn().mockReturnValue(bar.promise)
 
     let promisors = [getFoo, getBar]
 
@@ -22,7 +23,7 @@ describe('Queue:', () => {
     })
 
     it('Should return a combined promise resolved on success of all its promisors.', () => {
-      let onSuccess = jasmine.createSpy()
+      let onSuccess = vi.fn()
 
       foo.resolve('Foo')
       bar.resolve('Bar')
@@ -49,8 +50,8 @@ describe('Queue:', () => {
     })
 
     it('Should return a rejected promise on first rejection.', () => {
-      let onSuccess = jasmine.createSpy('onSuccess')
-      let onError = jasmine.createSpy('onError')
+      let onSuccess = vi.fn()
+      let onError = vi.fn()
 
       let promise = queue.flush()
 
