@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import {defer} from '../common'
 
 describe('defer:', () => {
@@ -5,8 +6,8 @@ describe('defer:', () => {
 
   beforeEach(() => {
     deferred = defer()
-    onSuccess = jasmine.createSpy('onSuccess')
-    onError = jasmine.createSpy('onError')
+    onSuccess = vi.fn()
+    onError = vi.fn()
   })
 
   it('Should return a promise.', () => {

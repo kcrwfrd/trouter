@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import Router from '../Router'
 import {defer} from '../common'
 
@@ -8,14 +9,14 @@ describe('Router:', () => {
   beforeEach(() => {
     router = new Router()
 
-    homeCtrl = jasmine.createSpy()
-    childCtrl = jasmine.createSpy()
-    siblingCtrl = jasmine.createSpy()
-    grandChildCtrl = jasmine.createSpy()
-    fooCtrl = jasmine.createSpy()
-    barCtrl = jasmine.createSpy()
-    bazCtrl = jasmine.createSpy()
-    bizCtrl = jasmine.createSpy()
+    homeCtrl = vi.fn()
+    childCtrl = vi.fn()
+    siblingCtrl = vi.fn()
+    grandChildCtrl = vi.fn()
+    fooCtrl = vi.fn()
+    barCtrl = vi.fn()
+    bazCtrl = vi.fn()
+    bizCtrl = vi.fn()
 
     bazDeferred = defer()
 
@@ -76,7 +77,7 @@ describe('Router:', () => {
         .then(() => router.go('home.child'))
         .then(() => {
           expect(childCtrl).toHaveBeenCalled()
-          expect(homeCtrl.calls.count()).toBe(1)
+          expect(homeCtrl.mock.calls.length).toBe(1)
         })
     })
 
@@ -84,9 +85,9 @@ describe('Router:', () => {
       return router.go('home.child')
         .then(() => router.go('home.sibling'))
         .then(() => {
-          expect(homeCtrl.calls.count()).toBe(1)
-          expect(childCtrl.calls.count()).toBe(1)
-          expect(siblingCtrl.calls.count()).toBe(1)
+          expect(homeCtrl.mock.calls.length).toBe(1)
+          expect(childCtrl.mock.calls.length).toBe(1)
+          expect(siblingCtrl.mock.calls.length).toBe(1)
         })
     })
 
@@ -96,8 +97,8 @@ describe('Router:', () => {
 
       return router.go('home.child')
         .then(() => {
-          expect(homeCtrl.calls.count()).toBe(1)
-          expect(childCtrl.calls.count()).toBe(1)
+          expect(homeCtrl.mock.calls.length).toBe(1)
+          expect(childCtrl.mock.calls.length).toBe(1)
         })
     })
 
@@ -106,10 +107,10 @@ describe('Router:', () => {
         .then(() => router.go('foo', { fooId: 1 }))
         .then(() => router.go('home.child.grandChild'))
         .then(() => {
-          expect(fooCtrl.calls.count()).toBe(1)
-          expect(homeCtrl.calls.count()).toBe(2)
-          expect(childCtrl.calls.count()).toBe(2)
-          expect(grandChildCtrl.calls.count()).toBe(1)
+          expect(fooCtrl.mock.calls.length).toBe(1)
+          expect(homeCtrl.mock.calls.length).toBe(2)
+          expect(childCtrl.mock.calls.length).toBe(2)
+          expect(grandChildCtrl.mock.calls.length).toBe(1)
         })
     })
 
@@ -128,7 +129,7 @@ describe('Router:', () => {
       let controller, deferred, router;
 
       beforeEach(() => {
-        controller = jasmine.createSpy('controller')
+        controller = vi.fn()
         deferred = defer()
         router = new Router()
 
@@ -153,10 +154,6 @@ describe('Router:', () => {
       })
 
       it('Should not invoke the controller after promise rejection.', () => {
-        // @TODO: emit error event
-        // let onError = jasmine.createSpy('onError')
-        // router.on('error', onError)
-
         deferred.reject('bar')
 
         return router.go('foo').catch(() => {
@@ -165,7 +162,7 @@ describe('Router:', () => {
       })
 
       it('Should not invoke a child route if parent resolve was rejected.', () => {
-        let controller = jasmine.createSpy('controller')
+        let controller = vi.fn()
 
         router.route('foo.bar', {
           parent: 'foo',
@@ -220,7 +217,7 @@ describe('Router:', () => {
       let foo = router.registry.get('foo')
 
       return router.transitionTo(foo, { 'fooId': 1}).then(() => {
-        let [params, resolve] = fooCtrl.calls.mostRecent().args
+        let [params, resolve] = fooCtrl.mock.calls[fooCtrl.mock.calls.length - 1]
 
         expect(params).toEqual({
           'fooId': 1
@@ -231,11 +228,11 @@ describe('Router:', () => {
     })
 
     it('Should update current with params.', () => {
-      spyOn(router.current, 'put')
+      vi.spyOn(router.current, 'put')
 
       return router.transitionTo(foo, { 'fooId': 1}).then(() => {
         expect(router.current.put).toHaveBeenCalledWith(foo,
-          jasmine.objectContaining({ fooId: 1 }))
+          expect.objectContaining({ fooId: 1 }))
       })
     })
 
@@ -245,7 +242,7 @@ describe('Router:', () => {
       bazDeferred.resolve('Baz')
 
       return router.transitionTo(baz, { 'fooId': 1}).then(() => {
-        let [params, resolve] = bazCtrl.calls.mostRecent().args
+        let [params, resolve] = bazCtrl.mock.calls[bazCtrl.mock.calls.length - 1]
 
         expect(params).toEqual({
           'fooId': 1
@@ -256,7 +253,7 @@ describe('Router:', () => {
     })
 
     it('Should update URL with correct params.', () => {
-      spyOn(router, 'pushState')
+      vi.spyOn(router, 'pushState')
 
       return router.transitionTo(bar, { fooId: 1, barId: 2}, {
         location: true
@@ -264,7 +261,7 @@ describe('Router:', () => {
         expect(router.pushState).toHaveBeenCalled()
 
         expect(router.pushState).toHaveBeenCalledWith(
-          jasmine.any(Object),
+          expect.any(Object),
           'Bar',
           '#!/foo/1/bar/2'
         )
@@ -272,11 +269,11 @@ describe('Router:', () => {
     })
 
     it('Should update URL without query arg when arg is null.', () => {
-      spyOn(router, 'pushState')
+      vi.spyOn(router, 'pushState')
 
       return router.go('foo.biz', { fooId: 2 }).then(() => {
         expect(router.pushState).toHaveBeenCalledWith(
-          jasmine.any(Object),
+          expect.any(Object),
           'Biz',
           '#!/foo/2/biz'
         )
@@ -284,11 +281,11 @@ describe('Router:', () => {
     })
 
     it('Should update URL with query arg when arg is defined.', () => {
-      spyOn(router, 'pushState')
+      vi.spyOn(router, 'pushState')
 
       return router.go('foo.biz', { fooId: 2, bizId: 3 }).then(() => {
         expect(router.pushState).toHaveBeenCalledWith(
-          jasmine.any(Object),
+          expect.any(Object),
           'Biz',
           '#!/foo/2/biz?bizId=3'
         )
@@ -296,13 +293,13 @@ describe('Router:', () => {
     })
 
     it('Should inherit params.', () => {
-      spyOn(router, 'pushState')
+      vi.spyOn(router, 'pushState')
 
       return router.transitionTo(foo, { fooId: 1 })
         .then(() => router.transitionTo(bar, { barId: 2 }, { location: true }))
         .then(() => {
           expect(router.pushState).toHaveBeenCalledWith(
-            jasmine.any(Object),
+            expect.any(Object),
             'Bar',
             '#!/foo/1/bar/2'
           )
@@ -310,19 +307,19 @@ describe('Router:', () => {
     })
 
     it('Should exit and re-enter if route is the same.', () => {
-      spyOn(foo, 'exit').and.callThrough()
+      vi.spyOn(foo, 'exit')
 
       return router.transitionTo(foo, { fooId: 1 })
         .then(() => router.transitionTo(foo))
         .then(() => {
           expect(foo.exit).toHaveBeenCalled()
-          expect(fooCtrl.calls.count()).toBe(2)
+          expect(fooCtrl.mock.calls.length).toBe(2)
         })
     })
 
     it('Should return a promise resolved on transition success.', () => {
-      let onSuccess = jasmine.createSpy('onSuccess')
-      let onError = jasmine.createSpy('onError')
+      let onSuccess = vi.fn()
+      let onError = vi.fn()
 
       bazDeferred.reject('O SNAPS')
 
@@ -336,10 +333,9 @@ describe('Router:', () => {
     })
 
     it('Should return a promise rejected on transition failure.', () => {
-      let onSuccess = jasmine.createSpy('onSuccess')
-        .and.callFake((result) => result)
+      let onSuccess = vi.fn().mockImplementation((result) => result)
 
-      let onError = jasmine.createSpy('onError')
+      let onError = vi.fn()
 
       bazDeferred.resolve('Weeee')
 
@@ -353,7 +349,7 @@ describe('Router:', () => {
     })
 
     it('Should exit and re-enter parent route when parent route param changes.', () => {
-      spyOn(foo, 'exit').and.callThrough()
+      vi.spyOn(foo, 'exit')
 
       return router.transitionTo(foo, {
         fooId: '1'
@@ -361,7 +357,7 @@ describe('Router:', () => {
       .then(() => router.transitionTo(bar, { fooId: '2', barId: '3' }))
       .then(() => {
         expect(foo.exit).toHaveBeenCalled()
-        expect(fooCtrl.calls.count()).toBe(2)
+        expect(fooCtrl.mock.calls.length).toBe(2)
       })
     })
 
@@ -375,7 +371,7 @@ describe('Router:', () => {
       beforeEach(() => {
         deferred = defer()
 
-        onExit = spyOn(Controller.prototype, 'onExit').and.returnValue(deferred.promise)
+        onExit = vi.spyOn(Controller.prototype, 'onExit').mockReturnValue(deferred.promise)
 
         router.route('gizmo', {
           controller: Controller
@@ -418,7 +414,7 @@ describe('Router:', () => {
 
   describe('on hash change:', () => {
     beforeEach(() => {
-      spyOn(router, 'transitionTo').and.callThrough()
+      vi.spyOn(router, 'transitionTo')
     })
 
     it('Should go to the correct route.', () => {
@@ -426,7 +422,7 @@ describe('Router:', () => {
 
       expect(router.transitionTo).toHaveBeenCalledWith(
         router.registry.get('home'),
-        jasmine.any(Object)
+        expect.any(Object)
       )
     })
 
@@ -435,7 +431,7 @@ describe('Router:', () => {
 
       expect(router.transitionTo).toHaveBeenCalledWith(
         router.registry.get('home.child'),
-        jasmine.any(Object)
+        expect.any(Object)
       )
     })
 
@@ -444,7 +440,7 @@ describe('Router:', () => {
 
       expect(router.transitionTo).toHaveBeenCalledWith(
         router.registry.get('home.child.grandChild'),
-        jasmine.any(Object)
+        expect.any(Object)
       )
     })
 
@@ -453,12 +449,12 @@ describe('Router:', () => {
 
       expect(router.transitionTo).toHaveBeenCalledWith(
         router.registry.get('foo'),
-        jasmine.objectContaining({
+        expect.objectContaining({
           fooId: '1',
         })
       )
 
-      expect(router.transitionTo.calls.mostRecent().args[1]).toEqual({
+      expect(router.transitionTo.mock.calls[router.transitionTo.mock.calls.length - 1][1]).toEqual({
         fooId: '1'
       })
     })
@@ -468,13 +464,13 @@ describe('Router:', () => {
 
       expect(router.transitionTo).toHaveBeenCalledWith(
         router.registry.get('foo.bar'),
-        jasmine.objectContaining({
+        expect.objectContaining({
           fooId: '1',
           barId: '2',
         })
       )
 
-      expect(router.transitionTo.calls.mostRecent().args[1]).toEqual({
+      expect(router.transitionTo.mock.calls[router.transitionTo.mock.calls.length - 1][1]).toEqual({
         fooId: '1',
         barId: '2',
       })
@@ -485,7 +481,7 @@ describe('Router:', () => {
 
       expect(router.transitionTo).toHaveBeenCalledWith(
         router.registry.get('foo.baz'),
-        jasmine.objectContaining({
+        expect.objectContaining({
           fooId: '1',
           bazId: '2',
         })
@@ -493,7 +489,7 @@ describe('Router:', () => {
     })
 
     it('Should log a warning if param is missing.', () => {
-      spyOn(console, 'warn')
+      vi.spyOn(console, 'warn').mockImplementation(() => {})
 
       router.urlRouter.onChange('#!/foo/')
 
