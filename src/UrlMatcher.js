@@ -90,7 +90,7 @@ class UrlMatcher {
     for (let [index, param] of this.pathParams.entries()) {
       // @TODO: throw error at route definition time for duplicate params
       if (result[param]) {
-        console.warning(`Warning: duplicate param '${paramName}'`)
+        console.warn(`Warning: duplicate param '${param}'`)
       }
 
       result[param] = match[index]
@@ -99,7 +99,7 @@ class UrlMatcher {
     for (let [index, param] of this.queryParams.entries()) {
       // @TODO: throw error at route definition time for duplicate params
       if (result[param]) {
-        console.warning(`Warning: duplicate param '${paramName}'`)
+        console.warn(`Warning: duplicate param '${param}'`)
       }
 
       let match = this.queryPatterns[index].exec(path)
