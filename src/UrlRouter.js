@@ -1,8 +1,4 @@
 import UrlMatcher from './UrlMatcher'
-import _ from 'lodash'
-import Bowser from 'bowser'
-
-const browser = Bowser.getParser(window.navigator.userAgent)
 
 class UrlRouter {
   constructor(prefix) {
@@ -10,10 +6,7 @@ class UrlRouter {
     this.rules = []
     this.default = null
 
-    // IE <=11 and Edge < 14 don't support popstate on hash URL changes. See
-    // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/3740423/
-    this.usePushState = !!(window.history && window.history.pushState) &&
-      !(browser.satisfies({ ie: '<=11', edge: '<14' }))
+    this.usePushState = !!(window.history && window.history.pushState)
   }
 
   onChange(hash) {

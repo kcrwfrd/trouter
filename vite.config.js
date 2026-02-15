@@ -9,14 +9,6 @@ export default defineConfig({
       fileName: (format) => format === 'es' ? 'trouter.js' : 'trouter.umd.js',
     },
     sourcemap: true,
-    rollupOptions: {
-      external: ['lodash'],
-      output: {
-        globals: {
-          lodash: '_',
-        },
-      },
-    },
   },
   test: {
     environment: 'jsdom',

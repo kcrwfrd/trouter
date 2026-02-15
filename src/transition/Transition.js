@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import Queue from '../Queue'
 
 /**
@@ -19,7 +18,7 @@ class Transition {
 
   constructor(transitions, current, target, currentParams = {}, toParams = {}) {
     // If a parent param has changed, we'll need to reload from there
-    let changedParams = _.reduce(currentParams, (memo, value, key) => {
+    let changedParams = Object.entries(currentParams).reduce((memo, [key, value]) => {
       if (key in toParams && toParams[key] !== value) {
         memo[key] = toParams[key]
       }
@@ -30,7 +29,7 @@ class Transition {
     // @TODO refactor path traversal into PathFactory
 
     let nearestCommonAncestor =
-      _.findLast(current.path, (ancestor) => {
+      current.path.findLast((ancestor) => {
         return target.path.indexOf(ancestor) > -1
       })
 
