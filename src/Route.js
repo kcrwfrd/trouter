@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import UrlMatcher from './UrlMatcher'
 
 /**
@@ -181,7 +180,7 @@ function getResolve(value, params) {
     return Promise.resolve(value(params))
   }
 
-  if (_.isPlainObject(value)) {
+  if (isPlainObject(value)) {
     return resolveObject(value, params)
   }
 
@@ -214,6 +213,12 @@ function resolveObject(obj, params) {
       return memo
     }, {})
   })
+}
+
+function isPlainObject(value) {
+  if (typeof value !== 'object' || value === null) return false
+  const proto = Object.getPrototypeOf(value)
+  return proto === Object.prototype || proto === null
 }
 
 export default Route

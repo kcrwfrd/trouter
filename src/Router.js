@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import {isObject, isString} from './common'
 import Current from './Current'
 import Registry from './Registry'
