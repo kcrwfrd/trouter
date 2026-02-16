@@ -1,4 +1,4 @@
-# Trouter
+# @kcrwfrd/trouter 🐟
 
 A client-side hash fragment URL router with a tree of async resolvers and controllers, built for single-page applications.
 
@@ -6,9 +6,7 @@ A client-side hash fragment URL router with a tree of async resolvers and contro
 
 - **Framework-agnostic** — bind plain functions or classes as route handlers
 - **Hierarchical route tree with async data resolution** — parent resolvers run before child controllers
-- **Smart transitions** — only re-enters routes whose params actually changed
 - **Zero dependencies**
-- **Hash-based (`#!`) and History API routing** (auto-detected)
 - **Path params** (`:id`), **query params** (`?filter`), and nested URL composition
 - **Controller exit hooks** — async, can block navigation
 - **Transition lifecycle hooks** — `onStart`, `onSuccess`, `onError`
